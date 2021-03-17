@@ -5,6 +5,7 @@ const express = require("express"),
   errorController = require("./controllers/errorController"),
   homeController = require("./controllers/homeController"),
   subscribersController = require("./controllers/subscribersController"),
+  usersController = require('./controllers/usersController'),
   layouts = require("express-ejs-layouts"),
   mongoose = require("mongoose"),
   Subscriber = require("./models/subscriber");
@@ -38,7 +39,8 @@ app.use(homeController.logRequestPaths);
 app.get("/name", homeController.respondWithName);
 app.get("/items/:vegetable", homeController.sendReqParam);
 
-app.get("/subscribers", subscribersController.getAllSubscribers, (req, res, next) => {
+app.get('/users', usersController.index);
+app.get("/subscribers", subscribersController.index, (req, res, next) => {
   res.render("subscribers", { subscribers: req.data });
 });
 
