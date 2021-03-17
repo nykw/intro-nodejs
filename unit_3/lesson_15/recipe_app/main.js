@@ -45,6 +45,9 @@ app.get('/subscribers', subscribersController.getAllSubscribers,
     });
   });
 
+app.get('/contact', subscribersController.getSubscriptionPage);
+app.post('/subscribe', subscribersController.saveSubscriber);
+
 app.post("/", (req, res) => {
   console.log(req.body);
   console.log(req.query);
