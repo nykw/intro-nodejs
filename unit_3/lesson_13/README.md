@@ -1,5 +1,13 @@
 # メモ
 
+## レッスンの概要
+
+- MongoDBのインストール
+- MongoDBのシェルで行う、データの読み書き
+- MongoDBをNode.jsアプリケーションに接続する
+
+## その他
+
 - [データベース概要](https://docs.oracle.com/javase/tutorial/jdbc/overview/database.html)
 
 - [MongoDB Compass](https://www.mongodb.com/try#compass)
