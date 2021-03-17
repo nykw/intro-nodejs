@@ -1,44 +1,51 @@
-const mongoose = require('mongoose');
-const Subscriber = require('./models/subscriber');
+const mongoose = require("mongoose");
+const Subscriber = require("./models/subscriber");
+const Course = require("./models/course");
+
+let testCourse, testSubscriber;
 
 mongoose.connect(
-  'mongodb://localhost:27017/recipe_db',
+  "mongodb://localhost:27017/recipe_db",
   { useNewUrlParser: true }
 );
 mongoose.Promise = global.Promise;
 
-Subscriber.create({ name: 'Jon', email: 'jon@jonwexler.com' }).then(data => { console.log(data); }).catch(error => console.log(error.message));
-Subscriber.create({ name: 'nykw', email: 'nykw@example.com' }).then(data => { console.log(data); }).catch(error => console.log(error.message));
-let sub;
-Subscriber.findOne({ name: 'nykw' }).then(data => { console.log(data); sub = data; }).catch(err => console.log(err));
-sub
-sub.getInfo()
-Subscriber.create({
-  name: 'Jon',
-  email: 'jon@jonwexler.com',
-  zipCode: '12345'
-}).then(subscriber => console.log(subscriber))
-  .catch(err => console.log(err.message));
-
-let subscriber;
-
-Subscriber.findOne({
-  name: 'Jon'
-})
-  .then(result => {
-    subscriber = result;
-    console.log(subscriber.getInfo());
-  });
-
-Subscriber.create({
-  name: 'Jon',
-  email: 'jon@jonwexler.com',
-  zipCode: '12345'
-}).then(subscriber => console.log(subscriber))
-  .catch(err => console.log(err.message));
-
-Subscriber.create({
-  name: 'aa',
-  email: 'aa',
-  zipCode: 1341234321
-}).then(data => console.log(data)).catch(err => console.log(err.message));
+Subscriber.remove({})
+  .then(items => console.log(`Removed ${items.n} records!`))
+  .then(() => Course.remove({}))
+  .then(items => console.log(`Removed ${items.n} records!`))
+  .then(() => Subscriber.create({
+    name: "Jon",
+    email: "jon@jonwexler.com",
+    zipCode: "12345"
+  }))
+  .then(subscriber => {
+    console.log(`Created Subscriber: ${subscriber.getInfo()}`);
+  })
+  .then(() => Subscriber.findOne({
+    name: "Jon"
+  }))
+  .then(subscriber => {
+    testSubscriber = subscriber;
+    console.log(`Found one subscriber: ${subscriber.getInfo()}`);
+  })
+  .then(() => Course.create({
+    title: "Tomato Land",
+    description: "Locally farmed tomatoes only",
+    zipCode: 12345,
+    items: ["cherry", "heirloom"]
+  }))
+  .then(course => {
+    testCourse = course;
+    console.log(`Created course: ${course.title}`);
+  })
+  .then(() => {
+    testSubscriber.courses.push(testCourse);
+    testSubscriber.save();
+  })
+  .then(() => Subscriber.populate(testSubscriber, "courses"))
+  .then(subscriber => console.log(subscriber))
+  .then(() => Subscriber.find({
+    courses: mongoose.Types.ObjectId(testCourse._id)
+  }))
+  .then(subscriber => console.log(subscriber));

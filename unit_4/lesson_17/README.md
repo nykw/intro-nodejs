@@ -40,3 +40,5 @@
   | `findOne` | 一つのレコードを返す。 |
   | `findById` | データベースへのクエリを ObjectId で行う。 |
   | `remove` | データベースにあるドキュメントを削除できる。 |
+
+- [`populate` の用例](https://mongoosejs.com/docs/populate.html)
