@@ -1,15 +1,18 @@
 const User = require('../models/user');
 
 module.exports = {
-  index: async (req, res) => {
+  index: async (req, res, next) => {
     try {
       const users = await User.find({});
-      res.render('users/index', {
-        users
-      })
+      // ユーザーデータをレスポンスに格納し、次のミドルウェア関数を呼び出す
+      res.locals.users = users;
+      next();
     } catch (err) {
       console.log(`Error fetching users:${err.message}`);
-      res.redirect('/');
+      next(err);
     }
+  },
+  indexView: (req, res) => {
+    res.render('users/index');
   }
 }

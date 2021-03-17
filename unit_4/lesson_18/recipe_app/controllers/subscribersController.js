@@ -3,22 +3,20 @@
 const Subscriber = require("../models/subscriber");
 
 module.exports = {
-  index: (req, res) => {
-    Subscriber.find({})
-      .exec()
-      .then(subscribers => {
-        res.render("subscribers/index", {
-          subscribers: subscribers
-        });
-      })
-      .catch(error => {
-        console.log(error.message);
-        return [];
-      })
-      .then(() => {
-        console.log("promise complete");
-      });
+  index: async (req, res, next) => {
+    try {
+      const subscribers = await Subscriber.find({}).exec()
+      res.locals.subscribers = subscribers;
+      next();
+    } catch (err) {
+      console.log(`Error fetching subscribers:${err.message}`);
+      next(err);
+    }
   },
+  indexView: (req, res) => {
+    res.render('subscribers/index');
+  },
+
   getSubscriptionPage: (req, res) => {
     res.render("contact");
   },
