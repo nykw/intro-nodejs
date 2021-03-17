@@ -17,7 +17,7 @@
     - `Date`
     - `Array`
 
-      例： `[String]`
+      例： `[String]`, `[{type: mongoose.Schema.Types.ObjectId, ref: 'Subscriber'}]`
 
     - `Mixed`
 
