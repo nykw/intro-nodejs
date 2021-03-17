@@ -4,7 +4,9 @@ const express = require("express"),
   app = express(),
   homeController = require("./controllers/homeController"),
   errorController = require("./controllers/errorController"),
+  subscriberController = require('./controllers/subscribersController'),
   layouts = require("express-ejs-layouts");
+
 
 const mongoose = require('mongoose');
 mongoose.connect(
@@ -32,7 +34,10 @@ app.get("/", (req, res) => {
 
 app.get("/courses", homeController.showCourses);
 app.get("/contact", homeController.showSignUp);
-app.post("/contact", homeController.postedSignUpForm);
+
+app.get('/subscribers', subscriberController.getAllSubscribers);
+app.get('/contact', subscriberController.getSubscriptionPage);
+app.post('/subscribe', subscriberController.saveSubscriber);
 
 app.use(errorController.pageNotFoundError);
 app.use(errorController.internalServerError);
