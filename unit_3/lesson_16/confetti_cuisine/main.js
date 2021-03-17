@@ -6,6 +6,12 @@ const express = require("express"),
   errorController = require("./controllers/errorController"),
   layouts = require("express-ejs-layouts");
 
+const mongoose = require('mongoose');
+mongoose.connect(
+  'mongodb://localhost:27017/confetti_cuisine',
+  { useNewUrlParser: true }
+);
+
 app.set("view engine", "ejs");
 app.set("port", process.env.PORT || 3000);
 app.use(
