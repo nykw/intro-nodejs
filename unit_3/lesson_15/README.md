@@ -8,3 +8,5 @@
 - ポストされたフォームデータを処理する
 
 ## その他
+
+- [Mongooseにおけるプロミス](https://mongoosejs.com/docs/4.x/docs/promises.html)

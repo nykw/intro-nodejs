@@ -8,6 +8,8 @@ const subscribersController = require('./controllers/subscribersController');
 const layouts = require("express-ejs-layouts");
 const mongoose = require('mongoose');
 
+// ES6のネイティブなプロミスを利用する
+mongoose.Promise = global.Promise;
 
 // データベース接続を設定
 mongoose.connect(
