@@ -1,13 +1,13 @@
 "use strict";
 
-const express = require("express"),
-  app = express(),
-  errorController = require("./controllers/errorController"),
-  homeController = require("./controllers/homeController"),
-  layouts = require("express-ejs-layouts");
-// mongooseをロード
+const express = require("express");
+const app = express();
+const errorController = require("./controllers/errorController");
+const homeController = require("./controllers/homeController");
+const subscribersController = require('./controllers/subscribersController');
+const layouts = require("express-ejs-layouts");
 const mongoose = require('mongoose');
-const Subscriber = require('./models/subscriber');
+
 
 // データベース接続を設定
 mongoose.connect(
@@ -20,18 +20,6 @@ const db = mongoose.connection;
 db.once('open', () => {
   console.log('Successfully connected to MongoDB using Mongoose!');
 });
-
-// クエリの作成
-const myQuery = Subscriber
-  .findOne({
-    name: "Jon Wexler"
-  })
-  .where('email', /wexler/);
-
-// クエリの実行
-myQuery.exec((error, data) => {
-  if (data) console.log(data.name);
-})
 
 app.set("port", process.env.PORT || 3000);
 app.set("view engine", "ejs");
@@ -48,6 +36,14 @@ app.use(homeController.logRequestPaths);
 
 app.get("/name", homeController.respondWithName);
 app.get("/items/:vegetable", homeController.sendReqParam);
+// リクエストを、getAllSubscribers関数に渡す
+app.get('/subscribers', subscribersController.getAllSubscribers,
+  (req, res, next) => {
+    console.log(req.data);
+    res.render('subscribers', {
+      subscribers: req.data
+    });
+  });
 
 app.post("/", (req, res) => {
   console.log(req.body);
