@@ -12,6 +12,9 @@ mongoose.connect(
   { useNewUrlParser: true }
 );
 
+// プロミスチェーンのサポート
+mongoose.Promise = global.Promise;
+
 app.set("view engine", "ejs");
 app.set("port", process.env.PORT || 3000);
 app.use(
