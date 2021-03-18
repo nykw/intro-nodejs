@@ -45,6 +45,7 @@ router.get("/contact", homeController.getSubscriptionPage);
 router.get("/users", usersController.index, usersController.indexView);
 router.get('/users/new', usersController.new);
 router.post('/users/create', usersController.create, usersController.redirectView);
+router.get('/users/:id', usersController.show, usersController.showView);
 
 router.get("/subscribers", subscribersController.index, subscribersController.indexView);
 

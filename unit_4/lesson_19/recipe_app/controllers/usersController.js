@@ -48,5 +48,20 @@ module.exports = {
     const redirectPath = res.locals.redirect;
     if (redirectPath) res.redirect(redirectPath);
     else next();
+  },
+  show: async (req, res, next) => {
+    const userId = req.params.id;
+
+    try {
+      const user = await User.findById(userId);
+      res.locals.user = user;
+      next();
+    } catch (err) {
+      console.log(`Error fetching user by ID:${err.message}`);
+      next(err);
+    }
+  },
+  showView: (req, res) => {
+    res.render('users/show');
   }
 };
