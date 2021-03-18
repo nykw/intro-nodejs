@@ -32,13 +32,18 @@ module.exports = {
     };
     User.create(userParams)
       .then(user => {
+        // 成功のフラッシュメッセージで応答する
+        req.flash('success', `${user.fullName}'s account created successfully!`);
         res.locals.redirect = "/users";
         res.locals.user = user;
         next();
       })
       .catch(error => {
         console.log(`Error saving user: ${error.message}`);
-        next(error);
+        res.locals.redirect = '/users/new';
+        // 失敗のフラッシュメッセージで応答する
+        req.flash('error', `Failed to create user account because:${error.message}`);
+        next();
       });
   },
   redirectView: (req, res, next) => {

@@ -20,9 +20,14 @@ mongoose.Promise = global.Promise;
 
 mongoose.connect(
   "mongodb://localhost:27017/recipe_db",
-  { useNewUrlParser: true }
+  // See https://mongoosejs.com/docs/deprecations.html
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+  }
 );
-mongoose.set("useCreateIndex", true);
 
 const db = mongoose.connection;
 
@@ -60,6 +65,12 @@ router.use(expressSession({
 }));
 // connect-flashをミドルウェアとして使う
 router.use(connectFlash());
+
+// フラッシュメッセージをレスポンスのローカル変数 flashMessagesに代入
+router.use((req, res, next) => {
+  res.locals.flashMessages = req.flash();
+  next()
+});
 
 router.use(express.json());
 router.use(homeController.logRequestPaths);

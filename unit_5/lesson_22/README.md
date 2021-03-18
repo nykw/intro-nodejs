@@ -11,3 +11,5 @@
 - [connect-flash](https://www.npmjs.com/package/connect-flash)
 - [express-session](https://www.npmjs.com/package/express-session)
 - [cookie-parser](https://www.npmjs.com/package/cookie-parser)
+
+- [mongoose - Deprecation Warnings](https://mongoosejs.com/docs/deprecations.html)
