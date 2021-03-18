@@ -1,5 +1,6 @@
 "use strict";
 
+const { findByIdAndDelete } = require("../models/user");
 const User = require("../models/user");
 
 module.exports = {
@@ -94,6 +95,18 @@ module.exports = {
       next();
     } catch (err) {
       console.log(`Error updating user by ID:${err.message}`);
+      next(err);
+    }
+  },
+  delete: async (req, res, next) => {
+    const userId = req.params.id;
+
+    try {
+      await User.findByIdAndRemove(userId);
+      res.locals.redirect = '/users';
+      next();
+    } catch (err) {
+      console.log(`Error deleting user by ID:${err.message}`);
       next(err);
     }
   }
