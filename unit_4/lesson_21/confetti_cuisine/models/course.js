@@ -19,7 +19,7 @@ const courseSchema = new Schema({
   cost: {
     type: Number,
     default: 0,
-    min: [o, 'Course cannot have a negative cost']
+    min: [0, 'Course cannot have a negative cost']
   }
 }, {
   timestamps: true
