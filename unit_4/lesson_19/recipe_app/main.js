@@ -2,6 +2,7 @@
 
 const express = require("express"),
   app = express(),
+  router = express.Router(),
   layouts = require("express-ejs-layouts"),
   mongoose = require("mongoose"),
   errorController = require("./controllers/errorController"),
@@ -37,18 +38,25 @@ app.use(
 app.use(express.json());
 app.use(homeController.logRequestPaths);
 
-app.get("/", homeController.index);
-app.get("/contact", homeController.getSubscriptionPage);
+router.get("/", homeController.index);
 
-app.get("/users", usersController.index, usersController.indexView);
-app.get("/subscribers", subscribersController.index, subscribersController.indexView);
-app.get("/courses", coursesController.index, coursesController.indexView);
+router.get("/contact", homeController.getSubscriptionPage);
 
-app.post("/subscribe", subscribersController.saveSubscriber);
+router.get("/users", usersController.index, usersController.indexView);
+router.get('/users/new', usersController.new);
+router.post('/users/create', usersController.create, usersController.redirectView);
 
-app.use(errorController.logErrors);
-app.use(errorController.respondNoResourceFound);
-app.use(errorController.respondInternalError);
+router.get("/subscribers", subscribersController.index, subscribersController.indexView);
+
+router.get("/courses", coursesController.index, coursesController.indexView);
+
+router.post("/subscribe", subscribersController.saveSubscriber);
+
+router.use(errorController.logErrors);
+router.use(errorController.respondNoResourceFound);
+router.use(errorController.respondInternalError);
+
+app.use('/', router);
 
 app.listen(app.get("port"), () => {
   console.log(`Server running at http://localhost:${app.get("port")}`);
