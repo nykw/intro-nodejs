@@ -11,7 +11,10 @@ const express = require("express"),
   subscribersController = require("./controllers/subscribersController"),
   usersController = require("./controllers/usersController"),
   coursesController = require("./controllers/coursesController"),
-  Subscriber = require("./models/subscriber");
+  Subscriber = require("./models/subscriber"),
+  expressSession = require('express-session'),
+  cookieParser = require('cookie-parser'),
+  connectFlash = require('connect-flash');
 
 mongoose.Promise = global.Promise;
 
@@ -43,6 +46,20 @@ router.use(
     methods: ["POST", "GET"]
   })
 );
+
+// cookie-parserをミドルウェアとして使う
+router.use(cookieParser('secret_passcode'));
+// express-sessionをミドルウェアとして使う
+router.use(expressSession({
+  secret: 'secret_passcode',
+  cookie: {
+    maxAge: 4000000
+  },
+  resave: false,
+  saveUninitialized: false
+}));
+// connect-flashをミドルウェアとして使う
+router.use(connectFlash());
 
 router.use(express.json());
 router.use(homeController.logRequestPaths);
