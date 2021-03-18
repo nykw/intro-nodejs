@@ -60,41 +60,5 @@ module.exports = {
   },
   showView: (req, res) => {
     res.render("users/show");
-  },
-  edit: async (req, res, next) => {
-    const userId = req.params.id;
-    try {
-      const user = await User.findById(userId);
-      res.render('users/edit', {
-        user
-      });
-    } catch (err) {
-      console.log(`Error fetching user by ID:${err.message}`);
-      next();
-    }
-  },
-  update: async (req, res, next) => {
-    const userId = req.params.id;
-    const userParams = {
-      name: {
-        first: req.body.first,
-        last: req.body.last
-      },
-      email: req.body.email,
-      password: req.body.password,
-      zipCode: req.body.zipCode
-    };
-
-    try {
-      const user = await User.findByIdAndUpdate(userId, {
-        $set: userParams
-      });
-      res.locals.redirect = `/users/${userId}`;
-      res.locals.user = user;
-      next();
-    } catch (err) {
-      console.log(`Error updating user by ID:${err.message}`);
-      next(err);
-    }
   }
 };
