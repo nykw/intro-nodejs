@@ -10,7 +10,8 @@ const express = require("express"),
   subscribersController = require("./controllers/subscribersController"),
   usersController = require("./controllers/usersController"),
   coursesController = require("./controllers/coursesController"),
-  Subscriber = require("./models/subscriber");
+  Subscriber = require("./models/subscriber"),
+  methodOverride = require('method-override');
 mongoose.Promise = global.Promise;
 
 mongoose.connect(
@@ -35,6 +36,11 @@ router.use(
     extended: false
   })
 );
+
+// ミドルウェアとして使うようにアプリケーションルータを設定
+router.use(methodOverride('_method', {
+  methods: ['POST', 'GET']
+}));
 
 router.use(express.json());
 router.use(homeController.logRequestPaths);

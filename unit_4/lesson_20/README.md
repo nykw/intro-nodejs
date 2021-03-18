@@ -5,3 +5,9 @@
 - モデル編集フォームを構築する
 - データベースのユーザーレコードを更新する
 - ユーザーレコードを削除する
+
+## その他
+
+- [method-override](https://www.npmjs.com/package/method-override)
+
+  特定のクエリパラメータとHTTPメソッドに応じてリクエストを解釈してくれるミドルウェア。
