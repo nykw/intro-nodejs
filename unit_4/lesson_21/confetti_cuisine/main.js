@@ -5,7 +5,8 @@ const express = require("express"),
   homeController = require("./controllers/homeController"),
   errorController = require("./controllers/errorController"),
   subscribersController = require("./controllers/subscribersController"),
-  layouts = require("express-ejs-layouts");
+  layouts = require("express-ejs-layouts"),
+  methodOverride = require('method-override');
 
 const mongoose = require("mongoose");
 mongoose.connect(
@@ -23,6 +24,8 @@ app.use(
 app.use(express.json());
 app.use(layouts);
 app.use(express.static("public"));
+
+app.use(methodOverride('_method', { methods: ['POST', 'GET'] }));
 
 app.get("/", (req, res) => {
   res.render("index");
