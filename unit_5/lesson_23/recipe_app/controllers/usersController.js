@@ -130,16 +130,26 @@ module.exports = {
       const user = await User.findOne({
         email: req.body.email
       });
-      if (user && user.password === req.body.password) {
-        res.locals.redirect = `/users/${user._id}`;
-        req.flash('success', `${user.fullName}'s logged in successfully!`);
-        res.locals.user = user;
-        next();
+
+      // ユーザーが見つかったら
+      if (user) {
+        const passwordsMatch = await user.passwordComparison(req.body.password);
+
+        // パスワードが一致したら
+        if (passwordsMatch) {
+          res.locals.redirect = `/users/${user._id}`;
+          req.flash('success', `${user.fullName}'s logged in successfully!`);
+          res.locals.user = user;
+        } else {
+          req.flash('error', 'Failed to log in user account: Incorrect Password.');
+          res.locals.redirect = '/users/login';
+        }
       } else {
-        req.flash('error', 'Your account or password is incorrect.' + 'Please try aagin or contact your system administrator!');
+        req.flash('error', 'Failed to log in user accont: User account not found.');
         res.locals.redirect = '/users/login';
-        next();
       }
+
+      next();
     } catch (err) {
       console.log(`Error logging in user:${err.message}`);
       next(err);
