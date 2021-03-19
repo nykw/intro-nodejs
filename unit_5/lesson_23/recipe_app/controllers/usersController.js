@@ -38,6 +38,8 @@ module.exports = {
     res.render("users/new");
   },
   create: (req, res, next) => {
+    if (req.skip) return next();
+
     let userParams = getUserParams(req.body);
     User.create(userParams)
       .then(user => {
@@ -153,6 +155,41 @@ module.exports = {
     } catch (err) {
       console.log(`Error logging in user:${err.message}`);
       next(err);
+    }
+  },
+  validate: async (req, res, next) => {
+    // email
+    req.sanitizeBody('email')
+      .normalizeEmail({
+        all_lowercase: true
+      }).trim();
+    req.check('email', 'Email is invalid').isEmail();
+    // zipCode
+    req.check('zipCode', 'Zip code is invalid')
+      .notEmpty()
+      .isInt()
+      .isLength({
+        min: 5,
+        max: 5
+      })
+      .equals(req.body.zipCode);
+    // password
+    req.check('password', 'Password cannot be empty')
+      .notEmpty();
+
+    try {
+      const error = await req.getValidationResult();
+      if (!error.isEmpty()) {
+        const messages = error.array().map(e => e.msg);
+        console.log(messages);
+        req.skip = true;
+        req.flash('error', messages.join(' and '));
+        res.locals.redirect = '/users/new';
+      }
+      next();
+    } catch (error) {
+      console.log(error.message);
+      next(error);
     }
   }
 };
