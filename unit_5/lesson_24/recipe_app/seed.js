@@ -1,53 +1,106 @@
 "use strict";
 
 const mongoose = require("mongoose"),
-  User = require("./models/user");
+  Subscriber = require("./models/subscriber"),
+  User = require("./models/user"),
+  Course = require("./models/course");
 
-mongoose.connect(
-  "mongodb://localhost:27017/recipe_db",
-  { useNewUrlParser: true }
-);
-mongoose.set("useCreateIndex", true);
+mongoose.connect("mongodb://localhost/recipe_db");
 mongoose.connection;
 
-var contacts = [
+// USERS
+var users = [
   {
-    name: { first: "Jon", last: "Wexler" },
+    name: {
+      first: "Jon",
+      last: "Wexler"
+    },
     email: "jon@jonwexler.com",
-    zipCode: 10016
+    zipCode: 10016,
+    password: "12345"
   },
   {
-    name: { first: "Chef", last: "Eggplant" },
+    name: {
+      first: "Chef",
+      last: "Eggplant"
+    },
     email: "eggplant@recipeapp.com",
-    zipCode: 20331
+    zipCode: 20331,
+    password: "12345"
   },
   {
-    name: { first: "Professor", last: "Souffle" },
+    name: {
+      first: "Professor",
+      last: "Souffle"
+    },
     email: "souffle@recipeapp.com",
-    zipCode: 19103
+    zipCode: 19103,
+    password: "12345"
   }
 ];
 
-User.deleteMany()
-  .exec()
-  .then(() => {
-    console.log("Subscriber data is empty!");
+let createSubscriber = (c, resolve) => {
+  Subscriber.create({
+    name: `${c.name.first} ${c.name.last}`,
+    email: c.email,
+    zipCode: c.zipCode
+  }).then(sub => {
+    console.log(`CREATED SUBSCRIBER: ${sub.name}`);
+    resolve(sub);
   });
+};
 
-var commands = [];
-
-contacts.forEach(c => {
-  commands.push(
-    User.create({
-      name: c.name,
-      email: c.email,
-      zipCode: c.zipCode,
-      password: c.zipCode
+users.reduce(
+  (promiseChain, next) => {
+    return promiseChain.then(
+      () =>
+        new Promise(resolve => {
+          createSubscriber(next, resolve);
+        })
+    );
+  },
+  Subscriber.remove({})
+    .exec()
+    .then(() => {
+      console.log("Subscriber data is empty!");
     })
-  );
-});
+);
 
-Promise.all(commands)
+let registerUser = (u, resolve) => {
+  User.register(
+    {
+      name: {
+        first: u.name.first,
+        last: u.name.last
+      },
+      email: u.email,
+      zipCode: u.zipCode,
+      password: u.password
+    },
+    u.password,
+    (error, user) => {
+      console.log(`USER created: ${user.fullName}`);
+      resolve(user);
+    }
+  );
+};
+
+users
+  .reduce(
+    (promiseChain, next) => {
+      return promiseChain.then(
+        () =>
+          new Promise(resolve => {
+            registerUser(next, resolve);
+          })
+      );
+    },
+    User.remove({})
+      .exec()
+      .then(() => {
+        console.log("User data is empty!");
+      })
+  )
   .then(r => {
     console.log(JSON.stringify(r));
     mongoose.connection.close();

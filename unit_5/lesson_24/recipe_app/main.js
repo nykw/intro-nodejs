@@ -63,6 +63,7 @@ router.use(
   })
 );
 
+router.use(connectFlash());
 
 router.use((req, res, next) => {
   res.locals.flashMessages = req.flash();
@@ -79,7 +80,6 @@ passport.use(User.createStrategy());
 // ユーザーデータのシリアライズ/デシリアライズを行うように、passportを設定する
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-router.use(connectFlash());
 
 router.use(homeController.logRequestPaths);
 
