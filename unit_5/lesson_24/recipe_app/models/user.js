@@ -3,7 +3,6 @@ const passportLocalMongoose = require('passport-local-mongoose');
 const mongoose = require("mongoose"),
   { Schema } = mongoose,
   Subscriber = require("./subscriber"),
-  bcrypt = require("bcrypt"),
   userSchema = new Schema(
     {
       name: {
