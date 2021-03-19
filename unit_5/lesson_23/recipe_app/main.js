@@ -74,6 +74,8 @@ router.get("/contact", homeController.getSubscriptionPage);
 router.get("/users", usersController.index, usersController.indexView);
 router.get("/users/new", usersController.new);
 router.post("/users/create", usersController.create, usersController.redirectView);
+router.get('/users/login', usersController.login);
+router.post('/users/login', usersController.authenticate, usersController.redirectView);
 router.get("/users/:id/edit", usersController.edit);
 router.put("/users/:id/update", usersController.update, usersController.redirectView);
 router.delete("/users/:id/delete", usersController.delete, usersController.redirectView);

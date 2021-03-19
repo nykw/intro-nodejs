@@ -1,5 +1,7 @@
 "use strict";
 
+const { ReplSet } = require("mongodb");
+
 const User = require("../models/user"),
   getUserParams = body => {
     return {
@@ -119,5 +121,28 @@ module.exports = {
         console.log(`Error deleting user by ID: ${error.message}`);
         next();
       });
+  },
+  login: (req, res) => {
+    res.render('users/login');
+  },
+  authenticate: async (req, res, next) => {
+    try {
+      const user = await User.findOne({
+        email: req.body.email
+      });
+      if (user && user.password === req.body.password) {
+        res.locals.redirect = `/users/${user._id}`;
+        req.flash('success', `${user.fullName}'s logged in successfully!`);
+        res.locals.user = user;
+        next();
+      } else {
+        req.flash('error', 'Your account or password is incorrect.' + 'Please try aagin or contact your system administrator!');
+        res.locals.redirect = '/users/login';
+        next();
+      }
+    } catch (err) {
+      console.log(`Error logging in user:${err.message}`);
+      next(err);
+    }
   }
 };
