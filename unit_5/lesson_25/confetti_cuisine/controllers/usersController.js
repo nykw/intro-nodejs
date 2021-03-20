@@ -33,19 +33,30 @@ module.exports = {
     res.render("users/new");
   },
 
-  create: (req, res, next) => {
-    let userParams = getUserParams(req.body);
+  create: async (req, res, next) => {
+    if (req.skip) next();
 
-    User.create(userParams)
-      .then(user => {
-        res.locals.redirect = "/users";
-        res.locals.user = user;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error saving user: ${error.message}`);
-        next(error);
+    const newUser = new User(getUserParams(req.body));
+
+    try {
+      const user = await new Promise((resolve) => {
+        User.register(newUser, req.body.password, (e, user) => {
+          if (e) throw e;
+          resolve(user);
+        });
       });
+
+      if (user) {
+        req.flash('success', `${user.fullName}'s account created successfully!`);
+        res.locals.redirect = '/users';
+      } else {
+        throw new Error('user not found');
+      }
+    } catch (error) {
+      req.flash('error', `Failed to create user account because:${error.message}`);
+      req.locals.redirect = `/users/new`;
+    }
+    next();
   },
 
   redirectView: (req, res, next) => {

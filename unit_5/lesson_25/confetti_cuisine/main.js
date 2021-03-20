@@ -17,6 +17,8 @@ const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
 const User = require('./models/user');
 
+const connectFlash = require('connect-flash');
+
 // cookieParserを秘密鍵を使って設定
 router.use(cookieParser('secretCuisine123'));
 // セッションを使うようにExpress.jsを設定
@@ -35,7 +37,13 @@ router.use(passport.session());
 passport.use(User.createStrategy());
 // passportを、ユーザーデータの圧縮・暗号化/復号を行うように設定
 passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser())
+passport.deserializeUser(User.deserializeUser());
+
+router.use(connectFlash());
+router.use((req, res, next) => {
+  res.locals.flashMessages = req.flash();
+  next();
+});
 
 mongoose.connect(
   "mongodb://localhost:27017/confetti_cuisine",
