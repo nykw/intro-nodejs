@@ -129,5 +129,40 @@ module.exports = {
 
   login: (req, res) => {
     res.render('users/login');
+  },
+  validate: async (req, res, next) => {
+    // email
+    req
+      .sanitizeBody('email')
+      .normalizeEmail({
+        all_lowercase: true
+      })
+      .trim();
+    req.check('email', 'Email is invalid').isEmail();
+    // zip code
+    req
+      .check('zipCode', 'Zip code is invalid')
+      .notEmpty()
+      .isInt()
+      .isLength({
+        min: 5,
+        max: 5
+      })
+      .equals(req.body.zipCode);
+    // password
+    req.check('password', 'Password cannot be empty').notEmpty();
+
+    try {
+      const error = await req.getValidationResult();
+      if (!error.isEmpty()) {
+        const messages = error.array().map(e => e.msg);
+        req.skip = true;
+        req.flash('error', messages.join(" and "));
+        res.locals.redirect = '/users/new';
+      }
+      next();
+    } catch (e) {
+      next(e);
+    }
   }
 };

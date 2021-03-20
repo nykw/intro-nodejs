@@ -19,6 +19,8 @@ const User = require('./models/user');
 
 const connectFlash = require('connect-flash');
 
+const expressValidator = require('express-validator');
+
 // cookieParserを秘密鍵を使って設定
 router.use(cookieParser('secretCuisine123'));
 // セッションを使うようにExpress.jsを設定
@@ -44,6 +46,8 @@ router.use((req, res, next) => {
   res.locals.flashMessages = req.flash();
   next();
 });
+
+router.use(expressValidator());
 
 mongoose.connect(
   "mongodb://localhost:27017/confetti_cuisine",
@@ -74,7 +78,7 @@ router.get("/", homeController.index);
 
 router.get("/users", usersController.index, usersController.indexView);
 router.get("/users/new", usersController.new);
-router.post("/users/create", usersController.create, usersController.redirectView);
+router.post("/users/create", usersController.validate, usersController.create, usersController.redirectView);
 router.get('/users/login', usersController.login);
 router.post('/users/login', usersController.authenticate);
 router.get('/users/logout', usersController.logout, usersController.redirectView);
