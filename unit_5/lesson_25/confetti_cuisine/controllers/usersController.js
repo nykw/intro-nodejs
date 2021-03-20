@@ -13,6 +13,8 @@ const User = require("../models/user"),
     };
   };
 
+const passport = require('passport');
+
 module.exports = {
   index: (req, res, next) => {
     User.find()
@@ -130,6 +132,14 @@ module.exports = {
   login: (req, res) => {
     res.render('users/login');
   },
+
+  logout: (req, res, next) => {
+    req.logout();
+    req.flash('success', 'You have logged out!');
+    res.locals.redirect = '/';
+    next();
+  },
+
   validate: async (req, res, next) => {
     // email
     req
@@ -164,5 +174,12 @@ module.exports = {
     } catch (e) {
       next(e);
     }
-  }
+  },
+
+  authenticate: passport.authenticate('local', {
+    failureRedirect: '/users/login',
+    failureFlash: 'Faled to login',
+    successRedirect: '/',
+    successFlash: 'Logged in!'
+  })
 };
