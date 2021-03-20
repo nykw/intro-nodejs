@@ -12,6 +12,31 @@ const express = require("express"),
   mongoose = require("mongoose"),
   methodOverride = require("method-override");
 
+const passport = require('passport');
+const cookieParser = require('cookie-parser');
+const expressSession = require('express-session');
+const User = require('./models/user');
+
+// cookieParserを秘密鍵を使って設定
+router.use(cookieParser('secretCuisine123'));
+// セッションを使うようにExpress.jsを設定
+router.use(expressSession({
+  secret: 'secretCuisine123',
+  cookie: {
+    maxAge: 4000000
+  },
+  resave: false,
+  saveUninitialized: false
+}));
+router.use(passport.initialize());
+// passportに対してセッションを使うように指示
+router.use(passport.session());
+// デフォルトのログインストラテジーを設定
+passport.use(User.createStrategy());
+// passportを、ユーザーデータの圧縮・暗号化/復号を行うように設定
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser())
+
 mongoose.connect(
   "mongodb://localhost:27017/confetti_cuisine",
   { useNewUrlParser: true }

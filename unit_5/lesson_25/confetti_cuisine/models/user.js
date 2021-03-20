@@ -4,6 +4,8 @@ const mongoose = require("mongoose"),
   { Schema } = require("mongoose"),
   Subscriber = require("./subscriber");
 
+const passportLocalMongoose = require('passport-local-mongoose');
+
 var userSchema = new Schema(
   {
     name: {
@@ -27,10 +29,6 @@ var userSchema = new Schema(
       min: [1000, "Zip code too short"],
       max: 99999
     },
-    password: {
-      type: String,
-      required: true
-    },
     subscribedAccount: { type: Schema.Types.ObjectId, ref: "Subscriber" },
     courses: [{ type: Schema.Types.ObjectId, ref: "Course" }]
   },
@@ -39,11 +37,11 @@ var userSchema = new Schema(
   }
 );
 
-userSchema.virtual("fullName").get(function() {
+userSchema.virtual("fullName").get(function () {
   return `${this.name.first} ${this.name.last}`;
 });
 
-userSchema.pre("save", function(next) {
+userSchema.pre("save", function (next) {
   let user = this;
   if (user.subscribedAccount === undefined) {
     Subscriber.findOne({
@@ -60,6 +58,11 @@ userSchema.pre("save", function(next) {
   } else {
     next();
   }
+});
+
+// passport-local-mongooseモジュールをユーザースキーマのプラグインとして追加
+userSchema.plugin(passportLocalMongoose, {
+  usernameField: 'email'
 });
 
 module.exports = mongoose.model("User", userSchema);
