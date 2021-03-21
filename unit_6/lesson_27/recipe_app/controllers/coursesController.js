@@ -1,6 +1,7 @@
 "use strict";
 
 const Course = require("../models/course");
+const User = require('../models/user');
 const httpStatus = require('http-status-codes');
 
 module.exports = {
@@ -129,5 +130,44 @@ module.exports = {
     };
 
     res.json(errorObject);
+  },
+
+  // ユーザーをコースに参加させる
+  join: async (req, res, next) => {
+    const courseId = req.params.id;
+    const currentUser = req.user;
+
+    try {
+      // 現在のユーザーがログインしているかをチェック
+      if (currentUser) {
+        await User.findByIdAndUpdate(currentUser, {
+          $addToSet: {
+            courses: courseId
+          }
+        });
+        res.locals.success = true;
+        next();
+      } else {
+        next(new Error('User must log in.'));
+      }
+    } catch (error) {
+      // ログインしていなければ、エラーを次のミドルウェア関数に渡す
+      next(error);
+    }
+  },
+
+  filterUserCourses: (req, res, next) => {
+    const currentUser = res.locals.currentUser;
+
+    if (currentUser) {
+      // コースデータにユーザーとの関連を示すフラグを加える
+      const mappedCourses = res.locals.courses.map((course) => {
+        // ユーザーのcourses配列に、そのコースが存在するかをチェック
+        const userJoined = currentUser.courses.some(userCourse => userCourse.equals(course._id));
+        return ({ ...course.toObject(), joined: userJoined });
+      });
+      res.locals.courses = mappedCourses;
+    }
+    next();
   }
 };
