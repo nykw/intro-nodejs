@@ -1,6 +1,7 @@
 "use strict";
 
 const Course = require("../models/course");
+const httpStatus = require('http-status-codes');
 
 module.exports = {
   index: (req, res, next) => {
@@ -15,11 +16,7 @@ module.exports = {
       });
   },
   indexView: (req, res) => {
-    if (req.query.format === "json") {
-      res.json(res.locals.courses);
-    } else {
-      res.render("courses/index");
-    }
+    res.render("courses/index");
   },
   new: (req, res) => {
     res.render("courses/new");
@@ -115,5 +112,22 @@ module.exports = {
     let redirectPath = res.locals.redirect;
     if (redirectPath !== undefined) res.redirect(redirectPath);
     else next();
+  },
+
+  respondJSON: (req, res) => {
+    res.json({
+      status: httpStatus.OK,
+      data: res.locals
+    });
+  },
+
+  // ステータスコード500とJSONフォーマットのエラーメッセージで応答
+  errorJSON: (error, req, res, next) => {
+    const errorObject = {
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error ? error.message : "Unknown Error"
+    };
+
+    res.json(errorObject);
   }
 };
