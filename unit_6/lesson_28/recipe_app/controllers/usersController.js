@@ -13,6 +13,7 @@ const User = require("../models/user"),
       zipCode: body.zipCode
     };
   };
+const token = process.env.TOKEN || 'recipeT0k3n';
 
 module.exports = {
   index: (req, res, next) => {
@@ -161,5 +162,9 @@ module.exports = {
     req.flash("success", "You have been logged out!");
     res.locals.redirect = "/";
     next();
+  },
+  verifyToken: (req, res, next) => {
+    if (req.query.apiToken === token) next();
+    else next(new Error('Invalid API token.'));
   }
 };

@@ -21,8 +21,10 @@ const express = require("express"),
 mongoose.Promise = global.Promise;
 mongoose.connect(
   "mongodb://localhost:27017/recipe_db",
-  { useNewUrlParser: true ,
-	 useFindAndModify: false }
+  {
+    useNewUrlParser: true,
+    useFindAndModify: false
+  }
 );
 mongoose.set("useCreateIndex", true);
 
@@ -31,6 +33,8 @@ const db = mongoose.connection;
 db.once("open", () => {
   console.log("Successfully connected to MongoDB using Mongoose!");
 });
+
+app.set('token', process.env.TOKEN || 'recipeT0k3n');
 
 app.set("port", process.env.PORT || 3000);
 app.set("view engine", "ejs");
