@@ -34,7 +34,7 @@ db.once("open", () => {
   console.log("Successfully connected to MongoDB using Mongoose!");
 });
 
-app.set('token', process.env.TOKEN || 'recipeT0k3n');
+// app.set('token', process.env.TOKEN || 'recipeT0k3n');
 
 app.set("port", process.env.PORT || 3000);
 app.set("view engine", "ejs");
