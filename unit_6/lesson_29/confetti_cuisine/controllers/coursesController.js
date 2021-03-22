@@ -10,6 +10,7 @@ const Course = require("../models/course"),
     };
   };
 const httpStatus = require('http-status-codes');
+const User = require('../models/user');
 
 module.exports = {
   index: (req, res, next) => {
@@ -144,6 +145,27 @@ module.exports = {
       next();
     } else {
       next();
+    }
+  },
+
+  join: async (req, res, next) => {
+    const courseId = req.params.id;
+    const currentUser = req.user;
+
+    try {
+      if (currentUser) {
+        await User.findByIdAndUpdate(currentUser, {
+          $addToSet: {
+            courses: courseId
+          }
+        });
+        res.locals.success = true;
+        next();
+      } else {
+        throw new Error('User must log in.');
+      }
+    } catch (error) {
+      next(error);
     }
   }
 };

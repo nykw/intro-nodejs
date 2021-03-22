@@ -2,6 +2,8 @@
 
 ## アプリケーションの構造
 
+![dep](dependencies.svg)
+
 ```text
 confetti_cuisine/
   models/
