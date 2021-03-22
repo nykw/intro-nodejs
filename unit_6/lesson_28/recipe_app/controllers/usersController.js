@@ -14,6 +14,8 @@ const User = require("../models/user"),
     };
   };
 // const token = process.env.TOKEN || 'recipeT0k3n';
+const jsonWebToken = require('jsonwebtoken');
+const httpStatus = require('http-status-codes');
 
 module.exports = {
   index: (req, res, next) => {
@@ -163,19 +165,102 @@ module.exports = {
     res.locals.redirect = "/";
     next();
   },
-  verifyToken: async (req, res, next) => {
-    const token = req.query.apiToken;
+  // verifyToken: async (req, res, next) => {
+  //   const token = req.query.apiToken;
+  //   try {
+  //     if (token) {
+  //       const user = await User.findOne({ apiToken: token });
+  //       if (user) {
+  //         next();
+  //         return
+  //       }
+  //     }
+  //     throw new Error('Invalid API token.');
+  //   } catch (error) {
+  //     next(new Error(error.message));
+  //   }
+  // },
+
+  apiAuthenticate: async (req, res, next) => {
     try {
-      if (token) {
-        const user = await User.findOne({ apiToken: token });
-        if (user) {
-          next();
-          return
-        }
+      // ユーザー認証をpassport.authenticateメソッドで行う
+      const user = await new Promise((resolve) => {
+        passport.authenticate('local', (error, user) => {
+          if (error) throw error;
+          resolve(user);
+        })(req, res, next);
+      });
+
+      if (user) {
+        // メールアドレスとパスワードの一致するユーザーがいたらJWTに署名する
+        const signedToken = jsonWebToken.sign(
+          {
+            data: user._id,
+            exp: new Date().setDate(new Date().getDate() + 1)
+          },
+          'secret_encoding_passphrase'
+        );
+        // JWTでレスポンスする
+        res.json({
+          success: true,
+          token: signedToken
+        });
+      } else {
+        throw new Error('Could not authenticate user');
       }
-      throw new Error('Invalid API token.');
     } catch (error) {
-      next(new Error(error.message));
+      res.json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  verifyJWT: async (req, res, next) => {
+    const token = req.headers.token;
+
+    if (token) {
+      try {
+        // JWTを認証し、ペイロードをデコードする
+        const payload = await new Promise((resolve) => {
+          jsonWebToken.verify(token, 'secret_encoding_passphrase', (errors, payload) => {
+            if (errors) throw errors;
+            resolve(payload);
+          })
+        });
+
+        if (payload) {
+          // JWTのペイロードからデコードされたIDと一致するユーザーを探す
+          const user = await User.findById(payload.data);
+
+          if (user) {
+            // JWTのIDを持つユーザーがあったら次のミドルウェア関数を呼び出す
+            next();
+          } else {
+            // ユーザーアカウントが見つからないときのエラーを返す
+            res.status(httpStatus.FORBIDDEN).json({
+              error: true,
+              message: 'No User account found'
+            });
+          }
+        } else {
+          // トークンの認証に失敗したときのエラー処理
+          res.status(httpStatus.UNAUTHORIZED).json({
+            error: true,
+            message: 'Cannot verify API token'
+          });
+          next();
+        }
+      } catch (error) {
+        console.log(error.message);
+        throw error;
+      }
+    } else {
+      // リクエストヘッダにトークンがなかったときのエラー処理
+      res.status(httpStatus.UNAUTHORIZED).json({
+        error: true,
+        message: 'Provide Token'
+      });
     }
   }
 };

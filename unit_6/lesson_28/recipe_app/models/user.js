@@ -34,9 +34,9 @@ const mongoose = require("mongoose"),
         type: Schema.Types.ObjectId,
         ref: "Subscriber"
       },
-      apiToken: {
-        type: String
-      }
+      // apiToken: {
+      //   type: String
+      // }
     },
     {
       timestamps: true
@@ -70,11 +70,11 @@ userSchema.plugin(passportLocalMongoose, {
   usernameField: "email"
 });
 
-userSchema.pre('save', function (next) {
-  const user = this;
-  // 既存のAPIトークンがあるかチェック、なければ生成
-  if (!user.apiToken) user.apiToken = randToken.generate(16);
-  next();
-});
+// userSchema.pre('save', function (next) {
+//   const user = this;
+//   // 既存のAPIトークンがあるかチェック、なければ生成
+//   if (!user.apiToken) user.apiToken = randToken.generate(16);
+//   next();
+// });
 
 module.exports = mongoose.model("User", userSchema);
