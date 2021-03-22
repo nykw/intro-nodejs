@@ -9,6 +9,7 @@ const Course = require("../models/course"),
       cost: body.cost
     };
   };
+const httpStatus = require('http-status-codes');
 
 module.exports = {
   index: (req, res, next) => {
@@ -110,5 +111,39 @@ module.exports = {
         console.log(`Error deleting course by ID: ${error.message}`);
         next();
       });
+  },
+
+  respondJSON: (req, res) => {
+    res.json({
+      status: httpStatus.OK,
+      data: res.locals
+    });
+  },
+
+  errorJSON: (error, req, res, next) => {
+    const errorObject = error ? {
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message
+    } : {
+      status: httpStatus.OK,
+      message: 'Unknown Error'
+    };
+
+    res.json(errorObject);
+  },
+
+  // ユーザーがログインしているかをチェックし、joinedプロパティにそのユーザーとの関連が反映されたコース配列を返す。
+  filterUserCourses: (req, res, next) => {
+    const currentUser = res.locals.currentUser;
+    if (currentUser) {
+      const mappedCourses = res.locals.courses.map(course => {
+        const userJoined = currentUser.courses.some(userCourse => userCourse.equals(course._id));
+        return { ...course.toObject(), joined: userJoined };
+      });
+      res.locals.courses = mappedCourses;
+      next();
+    } else {
+      next();
+    }
   }
 };
