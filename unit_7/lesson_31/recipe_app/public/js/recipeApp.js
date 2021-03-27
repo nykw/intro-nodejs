@@ -1,18 +1,35 @@
+const getCurrentUserClass = (id) => {
+  const userId = $('#chat-user-id').val();
+  return userId === id ? "current-user" : "";
+};
+
 $(document).ready(() => {
   const socket = io();
 
   $("#chatForm").submit(() => {
-    socket.emit("message");
+    const text = $('#chat-input').val();
+    const userId = $('#chat-user-id').val();
+    const userName = $('#chat-user-name').val();
+
+    socket.emit("message", {
+      content: text,
+      userId,
+      userName
+    });
     $("#chat-input").val("");
     return false;
   });
 
   socket.on("message", message => {
-    displayMessage(message.content);
+    displayMessage(message);
   });
 
-  let displayMessage = message => {
-    $("#chat").prepend($("<li>").html(message));
+  const displayMessage = ({ user, content }) => {
+    $("#chat").prepend($("<li>").html(`
+<div class="message ${getCurrentUserClass(user)}">
+${content}
+</div>
+    `));
   };
 
   $("#modal-button").click(() => {

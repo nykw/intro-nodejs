@@ -6,10 +6,14 @@ module.exports = io => {
     client.on("disconnect", () => {
       console.log("user disconnected");
     });
-    client.on("message", () => {
-      io.emit("message", {
-        content: "Hello"
-      });
+    client.on("message", ({ content, userName, userId }) => {
+      const messageAttributes = {
+        content,
+        userName,
+        user: userId
+      };
+
+      io.emit("message", messageAttributes);
     });
   });
 };
