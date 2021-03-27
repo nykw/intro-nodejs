@@ -5,5 +5,6 @@ const router = require("express").Router(),
 
 router.get("/", homeController.index);
 router.get("/contact", homeController.contact);
+router.get('/chat', homeController.chat);
 
 module.exports = router;
