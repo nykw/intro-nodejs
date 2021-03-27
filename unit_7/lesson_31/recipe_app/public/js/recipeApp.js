@@ -32,6 +32,12 @@ ${userName}
     `));
   };
 
+  socket.on('load all messages', (messages) => {
+    messages.forEach((message) => {
+      displayMessage(message);
+    });
+  })
+
   $("#modal-button").click(() => {
     $(".modal-body").html("");
     $.get("/api/courses?apiToken=recipeT0k3n", (results = {}) => {
