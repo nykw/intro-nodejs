@@ -24,11 +24,11 @@ $(document).ready(() => {
     displayMessage(message);
   });
 
-  const displayMessage = ({ user, content }) => {
+  const displayMessage = ({ user, userName, content }) => {
     $("#chat").prepend($("<li>").html(`
-<div class="message ${getCurrentUserClass(user)}">
-${content}
-</div>
+<strong class="message ${getCurrentUserClass(user)}">
+${userName}
+</strong>${content}
     `));
   };
 
