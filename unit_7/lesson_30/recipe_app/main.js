@@ -21,8 +21,10 @@ const express = require("express"),
 mongoose.Promise = global.Promise;
 mongoose.connect(
   "mongodb://localhost:27017/recipe_db",
-  { useNewUrlParser: true ,
-	 useFindAndModify: false }
+  {
+    useNewUrlParser: true,
+    useFindAndModify: false
+  }
 );
 mongoose.set("useCreateIndex", true);
 
@@ -80,6 +82,10 @@ app.use(expressValidator());
 
 app.use("/", router);
 
-app.listen(app.get("port"), () => {
+const server = app.listen(app.get('port'), () => {
   console.log(`Server running at http://localhost:${app.get("port")}`);
 });
+// サーバーのインスタンスをソケットioに渡す
+const io = require('socket.io')(server);
+
+require('./controllers/chatController')(io);

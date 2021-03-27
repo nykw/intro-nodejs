@@ -1,4 +1,22 @@
 $(document).ready(() => {
+  // クライアントサイドでioを初期化
+  const socket = io();
+
+  // フォームが送出されたときにイベントを発行
+  $('#chatForm').submit(() => {
+    socket.emit('message');
+    $('#chat-input').val('');
+    return false;
+  });
+
+  // サーバーから受信したメッセージをチャットボックスに表示
+  const displayMessage = (message) => $('#chat').prepend($('<li>').html(message));
+
+  // イベントを監視し、チャットボックスに記入
+  socket.on('message', (message) => {
+    displayMessage(message.content);
+  });
+
   $("#modal-button").click(() => {
     $(".modal-body").html("");
     $.get("/api/courses?apiToken=recipeT0k3n", (results = {}) => {

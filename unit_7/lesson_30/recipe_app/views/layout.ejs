@@ -9,6 +9,7 @@
 	<script type="text/javascript" src="/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/js/recipeApp.js"></script>
+	<script src="socket.io/socket.io.js"></script>
 	<link rel="stylesheet" href="/css/bootstrap.css">
 	<link rel="stylesheet" href="/css/recipe_app.css">
 </head>
@@ -32,33 +33,34 @@
 		</div>
 		<div class="login-status">
 			<% if (loggedIn) { %>
-			<div class="bubble logged-in">
-				Logged in as <a href="<%=`/users/${currentUser._id}`%>">
-					<%= currentUser.fullName %></a>
-			</div>
-			<div class="log-out">
-				<a href="/users/logout">Log out</a>
-			</div>
-			<%} else {%>
-			<div class="bubble log-in">
-				<a href="/users/login">Log In</a>
-			</div>
-			<% } %>
+				<div class="bubble logged-in">
+					Logged in as <a href="<%=`/users/${currentUser._id}`%>">
+						<%= currentUser.fullName %>
+					</a>
+				</div>
+				<div class="log-out">
+					<a href="/users/logout">Log out</a>
+				</div>
+				<%} else {%>
+					<div class="bubble log-in">
+						<a href="/users/login">Log In</a>
+					</div>
+					<% } %>
 		</div>
 	</div>
 
 	<div class="flashes">
 		<% if (flashMessages) { %>
-		<% if (flashMessages.success) { %>
-		<div class="flash success">
-			<%= flashMessages.success %>
-		</div>
-		<% } else if (flashMessages.error) { %>
-		<div class="flash error">
-			<%= flashMessages.error %>
-		</div>
-		<% } %>
-		<% } %>
+			<% if (flashMessages.success) { %>
+				<div class="flash success">
+					<%= flashMessages.success %>
+				</div>
+				<% } else if (flashMessages.error) { %>
+					<div class="flash error">
+						<%= flashMessages.error %>
+					</div>
+					<% } %>
+						<% } %>
 	</div>
 
 	<div class="container">
