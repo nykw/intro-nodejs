@@ -36,6 +36,12 @@ $(document).ready(() => {
     displayMessage(message);
   });
 
+  socket.on("load all messages", (data) => {
+    data.forEach(message => {
+      displayMessage(message);
+    });
+  });
+
   $("#modal-button").click(() => {
     $(".modal-body").html("");
     $.get(`/api/courses`, (results = {}) => {

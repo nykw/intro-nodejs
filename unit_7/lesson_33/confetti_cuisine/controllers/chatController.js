@@ -4,6 +4,15 @@ module.exports = io => {
   io.on('connection', client => {
     console.log("new connection");
 
+    Message.find({})
+      .sort({
+        createdfAt: -1
+      })
+      .limit(10)
+      .then(messages => {
+        client.emit("load all message", messages.reverse());
+      });
+
     client.on("disconnect", () => {
       console.log("user disconnected");
     });
