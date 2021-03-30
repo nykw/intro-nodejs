@@ -76,4 +76,4 @@ const server = app.listen(app.get("port"), () => {
 });
 
 const io = require('socket.io')(server);
-const chatController = require('./controlers/chatController')(io);
+const chatController = require('./controllers/chatController')(io);

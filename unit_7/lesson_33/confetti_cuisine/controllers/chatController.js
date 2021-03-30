@@ -10,7 +10,7 @@ module.exports = io => {
       })
       .limit(10)
       .then(messages => {
-        client.emit("load all message", messages.reverse());
+        client.emit("load all messages", messages.reverse());
       });
 
     client.on("disconnect", () => {
