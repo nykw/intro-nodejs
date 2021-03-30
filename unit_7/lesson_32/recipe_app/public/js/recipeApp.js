@@ -17,6 +17,10 @@ $(document).ready(() => {
 
   socket.on("message", message => {
     displayMessage(message);
+    // アイコンのアニメーションを行う
+    for (let i = 0; i < 2; i++) {
+      $('.chat-icon').fadeOut(200).fadeIn(200);
+    }
   });
 
   socket.on("load all messages", data => {
