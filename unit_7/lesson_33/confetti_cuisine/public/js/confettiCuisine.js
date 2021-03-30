@@ -1,4 +1,41 @@
 $(document).ready(() => {
+  const socket = io();
+
+  $("#chatForm").submit(() => {
+    const text = $("#chat-input").val();
+    const userName = $("#chat-user-name").val();
+    const userId = $("#chat-user-id").val();
+
+    socket.emit("message", {
+      content: text,
+      userName,
+      userId
+    });
+
+    $("#chat-input").val("");
+    return false;
+  });
+
+  const getCurrentUserClass = (id) => {
+    const userId = $("#chat-user-id").val();
+    return (userId === id) ? "current-user" : ""
+  };
+
+  const displayMessage = ({ content, user, userName }) => {
+    $("#chat").prepend($("<li>")).html(`
+<div class='message${getCurrentUserClass(user)}'>
+  <span class="user-name">
+  ${userName}
+  </span>
+  ${content}
+</div>
+`);
+  };
+
+  socket.on("message", (message) => {
+    displayMessage(message);
+  });
+
   $("#modal-button").click(() => {
     $(".modal-body").html("");
     $.get(`/api/courses`, (results = {}) => {
@@ -30,7 +67,7 @@ let addJoinButtonListener = () => {
   $(".join-button").click(event => {
     let $button = $(event.target),
       courseId = $button.data("id");
-			console.log(`/api/courses/${courseId}/join`)
+    console.log(`/api/courses/${courseId}/join`)
     $.get(`/api/courses/${courseId}/join`, (results = {}) => {
       let data = results.data;
       if (data && data.success) {
