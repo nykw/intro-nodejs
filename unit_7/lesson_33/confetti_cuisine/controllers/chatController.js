@@ -1,4 +1,6 @@
-module = io => {
+const Message = require("../models/message");
+
+module.exports = io => {
   io.on('connection', client => {
     console.log("new connection");
 
@@ -6,14 +8,21 @@ module = io => {
       console.log("user disconnected");
     });
 
-    client.on("message", ({ content, userName, userId }) => {
+    client.on("message", async ({ content, userName, userId }) => {
       const messageAttributes = {
         content,
         userName,
         user: userId
       };
 
-      io.emit('message');
+      const m = new Message(messageAttributes);
+
+      try {
+        await m.save();
+        io.emit('message', messageAttributes);
+      } catch (error) {
+        console.log(`error:${error.message}`);
+      }
     });
   });
 };
