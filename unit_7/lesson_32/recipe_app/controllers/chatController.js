@@ -14,15 +14,17 @@ module.exports = io => {
       });
 
     client.on("disconnect", () => {
+      // 接続中の、他の全てのソケットにブロードキャストする
+      client.broadcast.emit('user disconnected');
       console.log("user disconnected");
     });
 
     client.on("message", data => {
       let messageAttributes = {
-          content: data.content,
-          userName: data.userName,
-          user: data.userId
-        },
+        content: data.content,
+        userName: data.userName,
+        user: data.userId
+      },
         m = new Message(messageAttributes);
       m.save()
         .then(() => {

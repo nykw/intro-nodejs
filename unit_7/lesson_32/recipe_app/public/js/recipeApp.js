@@ -25,6 +25,13 @@ $(document).ready(() => {
     });
   });
 
+  socket.on('user disconnected', () => {
+    displayMessage({
+      userName: "Notice",
+      content: "User left the chat"
+    });
+  });
+
   let displayMessage = message => {
     $("#chat").prepend(
       $("<li>").html(`
