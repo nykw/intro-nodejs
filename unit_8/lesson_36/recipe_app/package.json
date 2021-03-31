@@ -4,7 +4,7 @@
   "description": "A Node.js application using Express.js",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npx mocha",
     "start": "node main.js"
   },
   "author": "Jon Wexler",
@@ -28,5 +28,9 @@
     "passport-local-mongoose": "^5.0.1",
     "rand-token": "^0.4.0",
     "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^8.3.2"
   }
 }
