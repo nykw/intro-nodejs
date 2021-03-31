@@ -19,7 +19,7 @@ const express = require("express"),
   User = require("./models/user");
 
 mongoose.Promise = global.Promise;
-mongoose.connect(
+mongoose.connect(process.env.MONGODB_URI ||
   "mongodb://localhost:27017/recipe_db",
   { useNewUrlParser: true, useFindAndModify: false }
 );
@@ -80,7 +80,7 @@ app.use(expressValidator());
 app.use("/", router);
 
 const server = app.listen(app.get("port"), () => {
-    console.log(`Server running at http://localhost: ${app.get("port")}`);
-  }),
+  console.log(`Server running at http://localhost: ${app.get("port")}`);
+}),
   io = require("socket.io")(server);
 require("./controllers/chatController")(io);
