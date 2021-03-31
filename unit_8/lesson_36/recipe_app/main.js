@@ -16,11 +16,16 @@ const express = require("express"),
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect(
-  process.env.MONGODB_URI || "mongodb://localhost:27017/recipe_db",
-  { useNewUrlParser: true, useFindAndModify: false }
-);
-
+// テスト環境ではテスト用データベースを使う
+if (process.env.NODE_ENV === "test") {
+  mongoose.connect("mongodb://localhost:27017/recipe_test_db",
+    { useNewUrlParser: true });
+} else { // デフォルトでは公開用または開発用のデータベースを使う
+  mongoose.connect(
+    process.env.MONGODB_URI || "mongodb://localhost:27017/recipe_db",
+    { useNewUrlParser: true, useFindAndModify: false }
+  );
+}
 mongoose.set("useCreateIndex", true);
 
 const db = mongoose.connection;
@@ -29,7 +34,13 @@ db.once("open", () => {
   console.log("Successfully connected to MongoDB using Mongoose!");
 });
 
-app.set("port", process.env.PORT || 3000);
+// テスト時
+if (process.env.NODE_ENV === "test") {
+  app.set("port", 3001);
+} else { // デフォルト
+  app.set("port", process.env.PORT || 3000);
+}
+
 app.set("view engine", "ejs");
 app.set("token", process.env.TOKEN || "recipeT0k3n");
 app.use(morgan("combined"));
@@ -78,7 +89,9 @@ app.use(expressValidator());
 app.use("/", router);
 
 const server = app.listen(app.get("port"), () => {
-    console.log(`Server running at http://localhost:${app.get("port")}`);
-  }),
+  console.log(`Server running at http://localhost:${app.get("port")}`);
+}),
   io = require("socket.io")(server);
 require("./controllers/chatController")(io);
+
+module.exports = app;

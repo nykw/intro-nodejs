@@ -1,6 +1,10 @@
 const chai = require("chai");
 const { expect } = chai;
 const usersController = require("../controllers/usersController");
+const chaiHTTP = require("chai-http");
+const app = require("../main");
+
+chai.use(chaiHTTP);
 
 // テストの対象をdescribeブロックで定義する
 describe("usersController", () => {
@@ -28,4 +32,15 @@ describe("usersController", () => {
       expect(usersController.getUserParams(emptyBody)).to.deep.include({});
     });
   });
+
+  describe("/users GET", () => {
+    it("should GET all the users", (done) => {
+      chai.request(app).get("/users")
+        .end((errors, res) => {
+          expect(res).to.have.status(200);
+          expect(errors).to.be.equal(null);
+          done();
+        });
+    })
+  })
 });
